@@ -13,28 +13,35 @@ void main(void){
     ClockInit();
     GpioInit();
     UartInit();
-/*
-    printf("\r\nCompiled: %s %s\r\n", __DATE__, __TIME__);
 
+    printf("\r\nCompiled: %s %s\r\n", __DATE__, __TIME__);
+/*
     printf("SDCC: %d.%d.%d rev %d\r\n", __SDCC_VERSION_MAJOR,
         __SDCC_VERSION_MINOR, __SDCC_VERSION_PATCH, __SDCC_REVISION);
 */
-
-    #define BUF_SIZE 7
-    uint8_t buf[BUF_SIZE];
     I2CInit();
+
+    #define BUF_SIZE 3
+    uint8_t buf[BUF_SIZE];
+    buf[0] = (__TIME__[6] - '0')*16 + (__TIME__[7] - '0');
+    buf[1] = (__TIME__[3] - '0')*16 + (__TIME__[4] - '0');
+    buf[2] = (__TIME__[0] - '0')*16 + (__TIME__[1] - '0');
+    printf("Start: %02X:%02X:%02X\r\n", buf[2], buf[1], buf[0]);
+    
+    I2CWrite(DS3231_ADDR, DS3231_SECONDS, buf, BUF_SIZE);
+
     while(1)
     {
         I2CRead(DS3231_ADDR, DS3231_SECONDS, buf, BUF_SIZE);
 
-        for(uint8_t i = 0; i < BUF_SIZE; i++)
+        for(int8_t i = BUF_SIZE - 1; i >= 0; i--)
         {
-            printf("0x%02X ", buf[i]);
+            printf("%02X ", buf[i]);
         }
         printf("\r\n");
 
         // delay about 1 s
-        for(volatile uint32_t i = 0; i < 100000; i++);
+        for(volatile uint32_t i = 0; i < 80000; i++);
     }
 
 
