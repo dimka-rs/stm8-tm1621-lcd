@@ -20,9 +20,18 @@
 #define I2C_SDA (5)
 
 /*
+ * PC4 - SPI_CS
  * PC5 - SPI_SCK
  * PC6 - SPI_MOSI
  * PC7 - SPI_MISO
+ */
+#define SPI_PORT (GPIOC)
+#define SPI_CS   (4)
+#define SPI_SCK  (5)
+#define SPI_MOSI (6)
+#define SPI_MISO (7)
+
+ /*
  * PD1 - SYS_SWIM
  */
 

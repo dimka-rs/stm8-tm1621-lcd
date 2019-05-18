@@ -43,7 +43,7 @@ PRJ_OBJECTS := $(addprefix $(OUTPUT_DIR)/, $(PRJ_SOURCE:.c=.rel))
 SPL_SRC_DIR = ./STM8S_StdPeriph_Driver/src
 SPL_INC_DIR = ./STM8S_StdPeriph_Driver/inc
 # add all library sources used here
-SPL_SOURCE  = stm8s_gpio.c stm8s_i2c.c
+SPL_SOURCE  = stm8s_gpio.c stm8s_i2c.c stm8s_spi.c
 SPL_OBJECTS := $(addprefix $(OUTPUT_DIR)/, $(SPL_SOURCE:.c=.rel))
 
 # collect all include folders

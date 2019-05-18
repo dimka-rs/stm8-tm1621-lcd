@@ -1,7 +1,6 @@
 #include "main.h"
 #include "stm8s_i2c.h"
 #include "stdio.h"
-#include "stdio.h"
 
 void I2CInit()
 {
