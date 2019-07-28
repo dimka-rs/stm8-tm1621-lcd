@@ -15,9 +15,6 @@
  * PB5 - I2C_SDA
  * PB4 - I2C_SCL
  */
-#define I2C_PORT (GPIOB)
-#define I2C_SCL (4)
-#define I2C_SDA (5)
 
 /*
  * PC4 - SPI_CS
@@ -27,9 +24,6 @@
  */
 #define SPI_PORT (GPIOC)
 #define SPI_CS   (1 << 4)
-#define SPI_SCK  (5)
-#define SPI_MOSI (6)
-#define SPI_MISO (7)
 
  /*
  * PD1 - SYS_SWIM
