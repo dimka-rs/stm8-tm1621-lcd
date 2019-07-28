@@ -15,7 +15,6 @@ void main(void){
     GpioInit();
     UartInit();
     I2CInit();
-    SPIInit();
 
     printf("\r\nCompiled: %s %s\r\n", __DATE__, __TIME__);
 /*
@@ -37,10 +36,18 @@ void main(void){
 #endif
 
     //LCD
-    #define CMD_SIZE 2
-    uint8_t cmd[CMD_SIZE] = {0xA0, 0x60};
-    #define DATA_SIZE 8
-    uint8_t data[DATA_SIZE] = {0xA0, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55};
+    enum
+    {
+        CMD_SIZE_BITS = 12,
+        CMD_SIZE_BYTES = CMD_SIZE_BITS / 8 + 1,
+        DATA_SIZE_BITS = (9 + 16*8),
+        DATA_SIZE_BYTES = DATA_SIZE_BITS / 8 + 1,
+    };
+    uint8_t lcd_on[CMD_SIZE_BYTES] = {0x80, 0x60};
+    uint8_t lcd_en[CMD_SIZE_BYTES] = {0x80, 0x20};
+    // 9 bits command+addr followed by 16 bytes of data
+    // total 18 bytes, but 137 bits
+    uint8_t data[DATA_SIZE_BYTES];
 
     while(1)
     {
@@ -51,11 +58,16 @@ void main(void){
             printf("%02X ", buf[i]);
         }
         printf("\r\n");
-        
-        GPIO_WriteLow(SPI_PORT, SPI_CS);
-        SPISend(cmd, CMD_SIZE);
-        SPISend(data, DATA_SIZE);
-        GPIO_WriteHigh(SPI_PORT, SPI_CS);
+
+        for(uint8_t i = 0; i < DATA_SIZE_BYTES; i++)
+        {
+            data[i] = buf[0]; //fill data with seconds
+        }
+        data[0] = 0xA0; //cmd write + addr
+        data[1] &= 0x7E; //clear msb, it is address lsb
+        SPISend(lcd_on, CMD_SIZE_BITS);
+        SPISend(lcd_en, CMD_SIZE_BITS);
+        SPISend(data, DATA_SIZE_BITS);
 
         // delay about 1 s
         for(volatile uint32_t d = 0; d < 80000; d++);
