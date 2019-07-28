@@ -1,4 +1,5 @@
 #include "main.h"
+#include "stdio.h"
 #include "stm8s_spi.h"
 #include "stm8s_gpio.h"
 #include "spi.h"
@@ -11,17 +12,22 @@ void SPIInit()
             SPI_CLOCKPOLARITY_HIGH,
             SPI_CLOCKPHASE_2EDGE,
             SPI_DATADIRECTION_1LINE_TX,
-            SPI_NSS_SOFT,
+            SPI_NSS_HARD,
             0);
+    SPI_Cmd(ENABLE);
 }
 
 void SPISend(uint8_t * data, uint8_t size)
 {
-    uint8_t tx;
-    GPIO_WriteLow(SPI_PORT, SPI_CS);
-    delay();
+    //uint8_t tx;
+    //GPIO_WriteLow(SPI_PORT, SPI_CS);
+    //delay();
     for(uint8_t byte = 0; byte < size; byte++)
     {
+        //wait until data reg empty
+        while(SPI_GetFlagStatus(SPI_FLAG_TXE)==RESET);
+        SPI_SendData(data[byte]);
+#if 0
         tx = data[byte];
         for(uint8_t bit = 0; bit < 8; bit++)
         {
@@ -29,7 +35,7 @@ void SPISend(uint8_t * data, uint8_t size)
             {
                 GPIO_WriteHigh(SPI_PORT, SPI_MOSI);
             } else {
-                GPIO_WriteHigh(SPI_PORT, SPI_MOSI);
+                GPIO_WriteLow(SPI_PORT, SPI_MOSI);
             }
             GPIO_WriteLow(SPI_PORT, SPI_SCK);
             delay();
@@ -37,11 +43,15 @@ void SPISend(uint8_t * data, uint8_t size)
             delay();
             tx = tx << 1;
         }
+#endif
     }
-    GPIO_WriteHigh(SPI_PORT, SPI_CS);
+    while(SPI_GetFlagStatus(SPI_FLAG_BSY)==SET);
+    //GPIO_WriteHigh(SPI_PORT, SPI_CS);
+    //delay();
 }
 
 inline void delay()
 {
-    for(volatile uint8_t i = 0; i < 10; i++);
+    return;
+    //for(volatile uint8_t i = 0; i < 20; i++);
 }

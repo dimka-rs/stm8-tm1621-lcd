@@ -26,7 +26,7 @@
  * PC7 - SPI_MISO
  */
 #define SPI_PORT (GPIOC)
-#define SPI_CS   (4)
+#define SPI_CS   (1 << 4)
 #define SPI_SCK  (5)
 #define SPI_MOSI (6)
 #define SPI_MISO (7)

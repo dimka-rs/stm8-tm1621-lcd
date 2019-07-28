@@ -51,10 +51,11 @@ void main(void){
             printf("%02X ", buf[i]);
         }
         printf("\r\n");
-
-
+        
+        GPIO_WriteLow(SPI_PORT, SPI_CS);
         SPISend(cmd, CMD_SIZE);
         SPISend(data, DATA_SIZE);
+        GPIO_WriteHigh(SPI_PORT, SPI_CS);
 
         // delay about 1 s
         for(volatile uint32_t d = 0; d < 80000; d++);
