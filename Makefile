@@ -19,10 +19,10 @@ DEVICE_FLASH=stm8s103f3
 # trap handling requires SDCC >=v3.4.3
 SKIP_TRAPS = 0
 
-# set compiler path & parameters 
+# set compiler path & parameters
 CC_ROOT = /home/dimka/apps/sdcc/bin
 CC      = $(CC_ROOT)/sdcc
-CFLAGS  = -mstm8 -lstm8 --opt-code-size --std-c99
+CFLAGS  = -mstm8 -lstm8 --opt-code-size --std-sdcc99
 
 # required for some examples for STM8S EVAL board
 #CFLAGS += -DUSE_STM8_128_EVAL
@@ -47,7 +47,7 @@ SPL_SOURCE  = stm8s_gpio.c stm8s_i2c.c stm8s_spi.c
 SPL_OBJECTS := $(addprefix $(OUTPUT_DIR)/, $(SPL_SOURCE:.c=.rel))
 
 # collect all include folders
-INCLUDE = -I$(PRJ_INC_DIR) -I$(SPL_INC_DIR) 
+INCLUDE = -I$(PRJ_INC_DIR) -I$(SPL_INC_DIR)
 
 # collect all source directories
 VPATH=$(PRJ_SRC_DIR):$(SPL_SRC_DIR)
@@ -70,3 +70,6 @@ flash: all
 
 clean:
 	rm $(OUTPUT_DIR)/*
+
+size:
+	$(CC_ROOT)/sdnm -A --print-size --size-sort --radix=d $(OUTPUT_DIR)/*rel

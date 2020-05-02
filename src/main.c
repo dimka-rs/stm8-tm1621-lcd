@@ -1,80 +1,63 @@
-#include "main.h"
+#include "stm8s.h"
 #include "clock.h"
 #include "gpio.h"
 #include "uart.h"
-#include "i2c.h"
 #include "spi.h"
+#include "i2c.h"
 #include "stdio.h" //sdcc, not standard
 #include "ds3231.h"
+#include "tm1621.h"
 
 /* declare private functions */
 
-
-void main(void){
+void Init_HW()
+{
     ClockInit();
     GpioInit();
     UartInit();
     I2CInit();
+}
 
-    printf("\r\nCompiled: %s %s\r\n", __DATE__, __TIME__);
+void main(void){
+    enum {
+        RTC_BUF_SIZE = 3,
+        LCD_BUF_SIZE = 8,
+    };
+    uint8_t rtc_buf[RTC_BUF_SIZE];
+    uint8_t lcd_buf[LCD_BUF_SIZE];
+    uint8_t pattern = 0;
+    uint8_t counter = 0;
+
+    Init_HW();
+
 /*
+    printf("\r\nCompiled: %s %s\r\n", __DATE__, __TIME__);
     printf("SDCC: %d.%d.%d rev %d\r\n", __SDCC_VERSION_MAJOR,
         __SDCC_VERSION_MINOR, __SDCC_VERSION_PATCH, __SDCC_REVISION);
 */
 
-    #define BUF_SIZE 3
-    uint8_t buf[BUF_SIZE];
-
-//#define SETTIME
-#ifdef SETTIME
-
-    buf[0] = (__TIME__[6] - '0')*16 + (__TIME__[7] - '0');
-    buf[1] = (__TIME__[3] - '0')*16 + (__TIME__[4] - '0');
-    buf[2] = (__TIME__[0] - '0')*16 + (__TIME__[1] - '0');
-    printf("Start: %02X:%02X:%02X\r\n", buf[2], buf[1], buf[0]);
-    I2CWrite(DS3231_ADDR, DS3231_SECONDS, buf, BUF_SIZE);
-#endif
-
-    //LCD
-    enum
-    {
-        CMD_SIZE_BITS = 12,
-        CMD_SIZE_BYTES = CMD_SIZE_BITS / 8 + 1,
-        DATA_SIZE_BITS = (9 + 16*8),
-        DATA_SIZE_BYTES = DATA_SIZE_BITS / 8 + 1,
-    };
-    uint8_t lcd_on[CMD_SIZE_BYTES] = {0x80, 0x60};
-    uint8_t lcd_en[CMD_SIZE_BYTES] = {0x80, 0x20};
-    // 9 bits command+addr followed by 16 bytes of data
-    // total 18 bytes, but 137 bits
-    uint8_t data[DATA_SIZE_BYTES];
 
     while(1)
     {
-        I2CRead(DS3231_ADDR, DS3231_SECONDS, buf, BUF_SIZE);
+        DS3231_GetTime(rtc_buf, RTC_BUF_SIZE);
 
-        for(int8_t i = BUF_SIZE - 1; i >= 0; i--)
-        {
-            printf("%02X ", buf[i]);
-        }
-        printf("\r\n");
+        /* Generate test pattern */
+        if (counter++ > 8)
+            counter = 0;
 
-        for(uint8_t i = 0; i < DATA_SIZE_BYTES; i++)
-        {
-            data[i] = buf[0]; //fill data with seconds
-        }
-        data[0] = 0xA0; //cmd write + addr
-        data[1] &= 0x7E; //clear msb, it is address lsb
-        SPISend(lcd_on, CMD_SIZE_BITS);
-        SPISend(lcd_en, CMD_SIZE_BITS);
-        SPISend(data, DATA_SIZE_BITS);
+        if (counter == 8)
+            pattern = 0;
+        else
+            pattern = 1 << counter;
+
+        for(uint8_t i = 0; i < LCD_BUF_SIZE; i++)
+            lcd_buf[i] = pattern;
+
+        TM1621_Print(lcd_buf, LCD_BUF_SIZE);
 
         // delay about 1 s
         for(volatile uint32_t d = 0; d < 80000; d++);
     }
-
-
-
 }
 
 int putchar (int c)
@@ -100,15 +83,16 @@ int putchar (int c)
   */
 void assert_failed(uint8_t* file, uint32_t line)
 {
-  (void)file;
-  (void)line;
+    (void)file;
+    (void)line;
 
-  /* User can add their own implementation to report the file name and line number,
+    /* User can add their own implementation to report the file name and line number,
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
 
-  /* Infinite loop */
-  while (1)
-  {
-  }
+    /* Infinite loop */
+    while (1)
+    {
+
+    }
 }
 #endif

@@ -1,23 +1,21 @@
-#ifndef _MAIN_H_
-#define _MAIN_H_
-
-#include "stm8s.h"
-
-
-/* GPIO Names */
+#ifndef _GPIO_NAMES_H
+#define _GPIO_NAMES_H
 
 /*
  * PD5 - UART1_TX
  * PD6 - UART1_RX
  */
+#define UART_PORT (GPIOD)
+#define UART_TX  (1 << 5)
+#define UART_RX  (1 << 4)
 
 /*
  * PB5 - I2C_SDA
  * PB4 - I2C_SCL
  */
 #define I2C_PORT (GPIOB)
-#define I2C_SDA (1 << 5)
-#define I2C_SCL (1 << 4)
+#define I2C_SDA  (1 << 5)
+#define I2C_SCL  (1 << 4)
 
 /*
  * PC4 - SPI_CS
@@ -30,9 +28,8 @@
 #define SPI_SCK  (1 << 5)
 #define SPI_MOSI (1 << 6)
 
- /*
+/*
  * PD1 - SYS_SWIM
  */
 
-
-#endif
+#endif /* _GPIO_NAMES_H */
