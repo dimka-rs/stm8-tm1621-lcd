@@ -10,7 +10,8 @@
 			"stm8s.h": "c",
 			"ds3231.h": "c",
 			"spi.h": "c",
-			"clock.h": "c"
+			"clock.h": "c",
+			"tm1621_internal.h": "c"
 		}
 	}
 }

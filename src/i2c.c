@@ -1,4 +1,3 @@
-#include "main.h"
 #include "stm8s_i2c.h"
 #include "stdio.h"
 
@@ -23,7 +22,7 @@ void I2CWrite(uint8_t slave, uint8_t addr, uint8_t * buffer, uint8_t size)
     // wait until start is sent
     while(!(I2C->SR1 & I2C_SR1_SB));
     // EV5: SB=1, cleared by reading SR1 register followed by writing DR register with Address.
-    
+
     I2C_Send7bitAddress(slave, I2C_DIRECTION_TX);
     // wait addr bit, if set - we have ACK
     while(!(I2C->SR1 & I2C_SR1_ADDR));
@@ -48,7 +47,7 @@ void I2CWrite(uint8_t slave, uint8_t addr, uint8_t * buffer, uint8_t size)
     // wait bte
     while(!(I2C->SR1 & I2C_SR1_BTF));
     //EV8_2: TXE=1, BTF = 1, Program STOP request. TXE and BTF are cleared by HW by stop condition
-    
+
     //stop after this byte
     I2C_GenerateSTOP(ENABLE);
 

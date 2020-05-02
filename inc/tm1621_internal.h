@@ -12,10 +12,14 @@ enum
     DATA_SIZE_BYTES = DATA_SIZE_BITS / 8 + 1,
 };
 
+/* 3 bits mode followed by 9 bit of command body */
+uint8_t lcd_off[CMD_SIZE_BYTES] = {0x80, 0x40};
 uint8_t lcd_on[CMD_SIZE_BYTES] = {0x80, 0x60};
-uint8_t lcd_en[CMD_SIZE_BYTES] = {0x80, 0x20};
-uint8_t mem_addr[MEM_ADDR_BYTES] = {0b10100000, 0};
-// 9 bits command+addr followed by 16 bytes of data
-// total 18 bytes, but 137 bits
+uint8_t lcd_bias[CMD_SIZE_BYTES] = {0x85, 0x00};
+uint8_t sys_en[CMD_SIZE_BYTES] = {0x80, 0x20};
+uint8_t sys_dis[CMD_SIZE_BYTES] = {0x80, 0x00};
+/* 3 bits mode, 6 bits address, followed by data in 4 bits chunks */
+uint8_t mem_addr[MEM_ADDR_BYTES] = {0xA0, 0x00};
+
 
 #endif /* _TM1621_INTERNAL_H_ */

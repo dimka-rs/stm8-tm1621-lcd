@@ -19,6 +19,8 @@ void DS3231_SetTime(uint8_t *buf, uint8_t size)
 {
 //#define SETTIME
 #ifdef SETTIME
+    (void *) buf;
+    (void *) size;
 
     buf[0] = (__TIME__[6] - '0')*16 + (__TIME__[7] - '0');
     buf[1] = (__TIME__[3] - '0')*16 + (__TIME__[4] - '0');

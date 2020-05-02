@@ -2,13 +2,17 @@
 #include "clock.h"
 #include "gpio.h"
 #include "uart.h"
-#include "spi.h"
 #include "i2c.h"
 #include "stdio.h" //sdcc, not standard
 #include "ds3231.h"
 #include "tm1621.h"
 
 /* declare private functions */
+
+void delay1s()
+{
+    for(volatile uint32_t d = 0; d < 80000; d++);
+}
 
 void Init_HW()
 {
@@ -21,7 +25,7 @@ void Init_HW()
 void main(void){
     enum {
         RTC_BUF_SIZE = 3,
-        LCD_BUF_SIZE = 8,
+        LCD_BUF_SIZE = 6,
     };
     uint8_t rtc_buf[RTC_BUF_SIZE];
     uint8_t lcd_buf[LCD_BUF_SIZE];
@@ -41,6 +45,7 @@ void main(void){
     {
         DS3231_GetTime(rtc_buf, RTC_BUF_SIZE);
 
+#if 0
         /* Generate test pattern */
         if (counter++ > 8)
             counter = 0;
@@ -53,10 +58,29 @@ void main(void){
         for(uint8_t i = 0; i < LCD_BUF_SIZE; i++)
             lcd_buf[i] = pattern;
 
-        TM1621_Print(lcd_buf, LCD_BUF_SIZE);
-
-        // delay about 1 s
-        for(volatile uint32_t d = 0; d < 80000; d++);
+        TM1621_PrintRaw(lcd_buf, LCD_BUF_SIZE);
+#else
+        TM1621_Print("012345", 6);
+        delay1s();
+        TM1621_Print("123456", 6);
+        delay1s();
+        TM1621_Print("234567", 6);
+        delay1s();
+        TM1621_Print("345678", 6);
+        delay1s();
+        TM1621_Print("456789", 6);
+        delay1s();
+        TM1621_Print("567890", 6);
+        delay1s();
+        TM1621_Print("678901", 6);
+        delay1s();
+        TM1621_Print("789012", 6);
+        delay1s();
+        TM1621_Print("890123", 6);
+        delay1s();
+        TM1621_Print("901234", 6);
+        delay1s();
+#endif
     }
 }
 

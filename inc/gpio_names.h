@@ -7,7 +7,7 @@
  */
 #define UART_PORT (GPIOD)
 #define UART_TX  (1 << 5)
-#define UART_RX  (1 << 4)
+#define UART_RX  (1 << 6)
 
 /*
  * PB5 - I2C_SDA
