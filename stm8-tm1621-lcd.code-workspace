@@ -11,7 +11,10 @@
 			"ds3231.h": "c",
 			"spi.h": "c",
 			"clock.h": "c",
-			"tm1621_internal.h": "c"
+			"tm1621_internal.h": "c",
+			"tm1621.h": "c",
+			"ds3231_internal.h": "c",
+			"i2c.h": "c"
 		}
 	}
 }

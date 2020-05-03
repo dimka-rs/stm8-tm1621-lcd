@@ -9,9 +9,10 @@
 
 /* declare private functions */
 
-void delay1s()
+void delay_s(uint8_t delay)
 {
-    for(volatile uint32_t d = 0; d < 80000; d++);
+    while (delay-- > 0)
+        for(volatile uint32_t d = 0; d < 80000; d++);
 }
 
 void Init_HW()
@@ -31,6 +32,7 @@ void main(void){
     uint8_t lcd_buf[LCD_BUF_SIZE];
     uint8_t pattern = 0;
     uint8_t counter = 0;
+    uint8_t tmp;
 
     Init_HW();
 
@@ -44,6 +46,17 @@ void main(void){
     while(1)
     {
         DS3231_GetTime(rtc_buf, RTC_BUF_SIZE);
+
+        /* Mirror array so that is starts with hours */
+        tmp = rtc_buf[0];
+        rtc_buf[0] = rtc_buf[2];
+        rtc_buf[2] = tmp;
+
+        TM1621_PrintHex(rtc_buf, 3);
+
+        printf("Time: %02X:%02X:%02X\r\n", rtc_buf[0], rtc_buf[1], rtc_buf[2]);
+        printf("Temp: %d C\r\n", DS3231_GetTemp());
+        delay_s(1);
 
 #if 0
         /* Generate test pattern */
@@ -59,27 +72,30 @@ void main(void){
             lcd_buf[i] = pattern;
 
         TM1621_PrintRaw(lcd_buf, LCD_BUF_SIZE);
-#else
-        TM1621_Print("012345", 6);
-        delay1s();
-        TM1621_Print("123456", 6);
-        delay1s();
-        TM1621_Print("234567", 6);
-        delay1s();
-        TM1621_Print("345678", 6);
-        delay1s();
-        TM1621_Print("456789", 6);
-        delay1s();
-        TM1621_Print("567890", 6);
-        delay1s();
-        TM1621_Print("678901", 6);
-        delay1s();
-        TM1621_Print("789012", 6);
-        delay1s();
-        TM1621_Print("890123", 6);
-        delay1s();
-        TM1621_Print("901234", 6);
-        delay1s();
+        delay_s(1);
+#endif
+
+#if 0
+        TM1621_PrintStr("012345", 6);
+        delay_s(1);
+        TM1621_PrintStr("123456", 6);
+        delay_s(1);
+        TM1621_PrintStr("234567", 6);
+        delay_s(1);
+        TM1621_PrintStr("345678", 6);
+        delay_s(1);
+        TM1621_PrintStr("456789", 6);
+        delay_s(1);
+        TM1621_PrintStr("567890", 6);
+        delay_s(1);
+        TM1621_PrintStr("678901", 6);
+        delay_s(1);
+        TM1621_PrintStr("789012", 6);
+        delay_s(1);
+        TM1621_PrintStr("890123", 6);
+        delay_s(1);
+        TM1621_PrintStr("901234", 6);
+        delay_s(1);
 #endif
     }
 }

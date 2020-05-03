@@ -3,5 +3,6 @@
 
 void DS3231_GetTime(uint8_t *buf, uint8_t size);
 void DS3231_SetTime(uint8_t *buf, uint8_t size);
+int8_t DS3231_GetTemp(void);
 
 #endif

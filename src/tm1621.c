@@ -5,10 +5,10 @@
 
 static uint8_t table[] =
 {
-/*  48 0  49 1  50 2  51 3  52 4  53 5  54 6  55 7  56 8 */
-    0x7D, 0x60, 0x3E, 0x7A, 0x63, 0x5B, 0x5F, 0x70, 0x7F,
-/*  57 9 */
-    0x7B
+/*  48 0  49 1  50 2  51 3  52 4  53 5  54 6  55 7  56 8  57 9 */
+    0x7D, 0x60, 0x3E, 0x7A, 0x63, 0x5B, 0x5F, 0x70, 0x7F, 0x7B,
+/*  65 A  66 B  67 C  68 D  69 E  70 F*/
+    0x77, 0x4F, 0x1D, 0x6E, 0x1F, 0x17
 };
 
 static inline void
@@ -59,7 +59,7 @@ TM1621_Send(uint8_t * data, uint8_t size)
     }
 }
 
-void TM1621_Print(uint8_t *buf, uint8_t size)
+void TM1621_PrintStr(uint8_t *buf, uint8_t size)
 {
     uint8_t lcd_buf[6];
 
@@ -73,6 +73,21 @@ void TM1621_Print(uint8_t *buf, uint8_t size)
             lcd_buf[size - i - 1] = table[buf[i] - '0'];
     }
     TM1621_PrintRaw(lcd_buf, size);
+}
+
+void TM1621_PrintHex(uint8_t *buf, uint8_t size)
+{
+    uint8_t lcd_buf[6];
+
+    if (size > 3)
+        size = 3;
+
+    for (uint8_t i = 0; i < size; i++)
+    {
+        lcd_buf[(size * 2 - 1) - (2 * i)] = table[(buf[i] & 0xF0) >> 4];
+        lcd_buf[(size * 2 - 1) - (2 * i + 1)] = table[buf[i] & 0x0F];
+    }
+    TM1621_PrintRaw(lcd_buf, size * 2);
 }
 
 void TM1621_PrintRaw(uint8_t *buf, uint8_t size)
