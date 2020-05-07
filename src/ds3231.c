@@ -12,13 +12,13 @@ void DS3231_SetTime(uint8_t *buf, uint8_t size)
 {
 //#define SETTIME
 #ifdef SETTIME
-    (void *) buf;
-    (void *) size;
-
     buf[0] = (__TIME__[6] - '0')*16 + (__TIME__[7] - '0');
     buf[1] = (__TIME__[3] - '0')*16 + (__TIME__[4] - '0');
     buf[2] = (__TIME__[0] - '0')*16 + (__TIME__[1] - '0');
     I2CWrite(DS3231_ADDR, DS3231_SECONDS, buf, size);
+#else
+    (void *) buf;
+    (void *) size;
 #endif
 }
 

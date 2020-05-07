@@ -29,7 +29,9 @@ void main(void){
         LCD_BUF_SIZE = 6,
     };
     uint8_t rtc_buf[RTC_BUF_SIZE];
-    uint8_t lcd_buf[LCD_BUF_SIZE];
+#if 0
+    uint8_t lcd_buf[LCD_BUF_SIZE]; // used for test patterns
+#endif
     uint8_t pattern = 0;
     uint8_t counter = 0;
     uint8_t tmp;
