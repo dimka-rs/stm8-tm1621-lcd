@@ -29,12 +29,12 @@ void main(void){
         LCD_BUF_SIZE = 6,
     };
     uint8_t rtc_buf[RTC_BUF_SIZE];
-#if 0
-    uint8_t lcd_buf[LCD_BUF_SIZE]; // used for test patterns
-#endif
+    uint8_t lcd_buf[LCD_BUF_SIZE];
     uint8_t pattern = 0;
     uint8_t counter = 0;
+    uint8_t cnt = 0;
     uint8_t tmp;
+    int8_t temp;
 
     Init_HW();
 
@@ -54,10 +54,47 @@ void main(void){
         rtc_buf[0] = rtc_buf[2];
         rtc_buf[2] = tmp;
 
-        TM1621_PrintHex(rtc_buf, 3);
+        if (cnt < 10)
+        {
+            TM1621_PrintHex(rtc_buf, 3);
+        }
+        else
+        {
+            if (cnt >= 12)
+                cnt = 0;
+            temp = DS3231_GetTemp();
+            if (temp > 99)
+                temp = 99;
+            if (temp < -99)
+                temp = -99;
+
+            if (temp < 0)
+            {
+                lcd_buf[0] = '-';
+                temp = temp * -1;
+            }
+            else
+            {
+                lcd_buf[0] = ' ';
+            }
+
+            if (temp > 10)
+                lcd_buf[1] = temp / 10 + '0';
+            else
+                lcd_buf[1] = ' ';
+
+            lcd_buf[2] = temp % 10 + '0';
+
+            lcd_buf[3] = ' ';
+            lcd_buf[4] = '*';
+            lcd_buf[5] = 'C';
+
+            TM1621_PrintStr(lcd_buf, 6);
+        }
 
         printf("Time: %02X:%02X:%02X\r\n", rtc_buf[0], rtc_buf[1], rtc_buf[2]);
         printf("Temp: %d C\r\n", DS3231_GetTemp());
+        cnt++;
         delay_s(1);
 
 #if 0
