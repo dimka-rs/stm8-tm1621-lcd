@@ -22,10 +22,25 @@ void DS3231_SetTime(uint8_t *buf, uint8_t size)
 #endif
 }
 
-int8_t DS3231_GetTemp(void)
+void DS3231_GetTemp(int8_t *val, uint8_t *frac)
 {
-    int8_t temp;
+    uint8_t tmp;
 
-    I2CRead(DS3231_ADDR, DS3231_TEMP_MSB, &temp, 1);
-    return temp;
+    I2CRead(DS3231_ADDR, DS3231_TEMP_MSB, val, 1);
+    I2CRead(DS3231_ADDR, DS3231_TEMP_LSB, &tmp, 1);
+
+    switch (tmp)
+    {
+        case 0x40:
+            *frac = 3;
+            break;
+        case 0x80:
+            *frac = 5;
+            break;
+        case 0xC0:
+            *frac = 8;
+            break;
+        default:
+            *frac = 0;
+    }
 }

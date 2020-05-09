@@ -43,11 +43,22 @@ static uint8_t table[] =
 };
 
 static uint8_t lcd_buf[6];
+static uint8_t dotbat;
 
 static inline void
 delay()
 {
     for(volatile uint8_t i = 0; i < 20; i++);
+}
+
+static void
+TM1621_ApplyDotBat(void)
+{
+    for (int i = 0; i < 6; i++)
+    {
+        if (dotbat & (1 << i))
+            lcd_buf[5 - i] |= 0x80;
+    }
 }
 
 static void
@@ -105,6 +116,7 @@ void TM1621_PrintStr(uint8_t *buf, uint8_t size)
         else
             lcd_buf[size - i - 1] = 0;
     }
+    TM1621_ApplyDotBat();
     TM1621_PrintRaw(lcd_buf, size);
 }
 
@@ -132,6 +144,7 @@ void TM1621_PrintHex(uint8_t *buf, uint8_t size)
 
         lcd_buf[(size * 2 - 1) - (2 * i + 1)] = table[idx];
     }
+    TM1621_ApplyDotBat();
     TM1621_PrintRaw(lcd_buf, size * 2);
 }
 
@@ -142,9 +155,14 @@ void TM1621_PrintDec(int32_t val)
         for (int i = 0; i < 6; i++)
             lcd_buf[i] = table['-' - 32];
     }
+
     TM1621_PrintRaw(lcd_buf, 6);
 }
 
+void TM1621_DotBat(uint8_t val)
+{
+    dotbat = val;
+}
 
 void TM1621_PrintRaw(uint8_t *buf, uint8_t size)
 {

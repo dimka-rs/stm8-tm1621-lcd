@@ -34,7 +34,8 @@ void main(void){
     uint8_t counter = 0;
     uint8_t cnt = 0;
     uint8_t tmp;
-    int8_t temp;
+    int8_t  tempd;
+    uint8_t tempf;
 
     Init_HW();
 
@@ -48,6 +49,7 @@ void main(void){
     while(1)
     {
         DS3231_GetTime(rtc_buf, RTC_BUF_SIZE);
+        DS3231_GetTemp(&tempd, &tempf);
 
         /* Mirror array so that is starts with hours */
         tmp = rtc_buf[0];
@@ -56,44 +58,46 @@ void main(void){
 
         if (cnt < 10)
         {
+            TM1621_DotBat(TM1621_DOTBAT_CLEAR);
             TM1621_PrintHex(rtc_buf, 3);
         }
         else
         {
             if (cnt >= 12)
                 cnt = 0;
-            temp = DS3231_GetTemp();
-            if (temp > 99)
-                temp = 99;
-            if (temp < -99)
-                temp = -99;
 
-            if (temp < 0)
+            if (tempd > 99)
+                tempd = 99;
+            if (tempd < -99)
+                tempd = -99;
+
+            if (tempd < 0)
             {
                 lcd_buf[0] = '-';
-                temp = temp * -1;
+                tempd = tempd * -1;
             }
             else
             {
                 lcd_buf[0] = ' ';
             }
 
-            if (temp > 10)
-                lcd_buf[1] = temp / 10 + '0';
+            if (tempd > 10)
+                lcd_buf[1] = tempd / 10 + '0';
             else
                 lcd_buf[1] = ' ';
 
-            lcd_buf[2] = temp % 10 + '0';
+            lcd_buf[2] = tempd % 10 + '0';
 
-            lcd_buf[3] = ' ';
+            lcd_buf[3] = tempf + '0';
             lcd_buf[4] = '*';
             lcd_buf[5] = 'C';
 
+            TM1621_DotBat(TM1621_DOTBAT_DOT3);
             TM1621_PrintStr(lcd_buf, 6);
         }
 
         printf("Time: %02X:%02X:%02X\r\n", rtc_buf[0], rtc_buf[1], rtc_buf[2]);
-        printf("Temp: %d C\r\n", DS3231_GetTemp());
+        printf("Temp: %d.%d C\r\n", tempd, tempf);
         cnt++;
         delay_s(1);
 
